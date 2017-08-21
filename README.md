@@ -3,17 +3,22 @@
 APIDB dibuat untuk memudahkan komunikasi dengan Database menggunakan API
 
 ## Code Example
-  
+  ```
   type 1
   http://localhost:9002/querylist?jndi=erin&sql=select * from user
+  ```
+  ```
   result:
   {"status":"","desc":"","count":2,"count_total":2,"pages":1,"results":[{"password":"6ad14ba9986e3615423dfca256d04e3f","phone":"08118003585","last_update":"2017-06-28 20:34:50","id":"2","type":"0","email":"qomarullah.mail@gmail.com","username":"user"},{"password":"6ad14ba9986e3615423dfca256d04e3f","phone":"08118003585","last_update":"2017-06-28 20:34:50","id":"2","type":"0","email":"qomarullah.mail@gmail.com","username":"user"}]}
-
+ ```
+  ```
   type 2
   http://localhost:9002/getlist?jndi=hvc&sqlid=1&msisdn=628111111111
+  ```
+  ```
   result:
   {"status":"success","desc":"","count":1,"count_total":1,"pages":1,"results":[{"PP":"PP Loop Charlie","LOS":"107","BCP_SEGMENT":"DeviceServices|Net|SocialNet|Web|Ads","REV":"0.00","RECHARGE_M":"10","DOMINANT_CITY":"null","MSISDN":"6282213801053","REDEEM_CATEGORY":"null","LAST_UPDATED":"2017-04-10 00:00:00.0","ARPU":"0.00","RECHARGE_M1":"100","LOYALTY_SEGMENT":"null"}]}
-  
+  ```
   etc..
   
 ## Motivation
