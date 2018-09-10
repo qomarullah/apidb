@@ -70,14 +70,15 @@ public class MysqlFacade {
 		driver = p[3];
 		
 		try {
-			//Class.forName("com.mysql.jdbc.Driver");
-			Class.forName(driver);
-			System.out.println("====================="+driver);
+			Class.forName("com.mysql.jdbc.Driver");
+			//Class.forName(driver);
+			//System.out.println("====================="+driver);
 		} catch (ClassNotFoundException e1) {
 			log.error("Error getting database driver : "+ "com.mysql.jdbc.Driver");
 		}
 
 		if(p[2].equals("null"))p[2]="";
+		System.out.println("=>"+p[0]+"-"+p[1]+"-"+p[2]);
 		DataSource unpooled = DataSources.unpooledDataSource(p[0], p[1], p[2]);
 		
 		Map overrides = new HashMap();

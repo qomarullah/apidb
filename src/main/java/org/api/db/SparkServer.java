@@ -27,36 +27,52 @@ import org.api.db.modal.Result;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import spark.Filter;
+import spark.Request;
+import spark.Response;
+import spark.Spark;
+
 
 public class SparkServer {
 
 	private final static Logger log = LogManager.getLogger(SparkServer.class);
-	
+	private static final HashMap<String, String> corsHeaders = new HashMap<String, String>();
+
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		
 	}
+	
+	static {
+		corsHeaders.put("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE,OPTIONS");
+		corsHeaders.put("Access-Control-Allow-Origin", "*");
+		corsHeaders.put("Access-Control-Allow-Headers",
+				"Content-Type,Authorization,X-Requested-With,Content-Length,Accept,Origin,");
+		corsHeaders.put("Access-Control-Allow-Credentials", "true");
+	}
+	public final static void apply() {
+		Filter filter = new Filter() {
+			@Override
+			public void handle(Request request, Response response) throws Exception {
+				corsHeaders.forEach((key, value) -> {
+					response.header(key, value);
+				});
+				response.type("application/json");
+			}
+		};
+		Spark.after(filter);
+	}
+	
+
 	public SparkServer(int port, int minThreads, int maxThreads, int timeOutMillis){
 		
-		// Setup JMX
-		/*JettyServerFactory js= new JettyServerFactory() {
-			
-			@Override
-			public Server create(int maxThreads, int minThreads, int threadTimeoutMillis) {
-				// TODO Auto-generated method stub
-				return null;
-			}
-			@Override
-			public Handler
-		};
-		js.create(maxThreads, minThreads, threadTimeoutMillis);
-		*/
-		
-		port(port);
+		Spark.port(port);
 		threadPool(maxThreads, minThreads, timeOutMillis);
-		get("/hello", (req, res) -> "Bismillahirrahmanirrahim");
+		Spark.get("/hello", (req, res) -> "Bismillahirrahmanirrahim");
 		
-		get("/query", (request, response) -> {
+		Spark.get("/query", (request, response) -> {
+			long start=System.currentTimeMillis();
+			
 			String resp="";
 			String jndi=request.queryParams("jndi");
 			String sql=request.queryParams("sql");
@@ -66,11 +82,18 @@ public class SparkServer {
 				// TODO: handle exception
 				resp = e.getMessage();
 			}
-		    log.info("query:"+jndi+"|"+sql+"|"+resp);
+		    response.type("application/json");
+		    response.header("Access-Control-Allow-Origin", "*");
+			
+		    long rt=start-System.currentTimeMillis();
+			String tdr=rt+"|"+jndi+"|"+sql+"|"+resp;
+			LogTDR.info(tdr);
 		    return resp;
 		});
 		
-		post("/query", (request, response) -> {
+		Spark.post("/query", (request, response) -> {
+			long start=System.currentTimeMillis();
+			
 			String resp="";
 			String jndi=request.queryParams("jndi");
 			String sql=request.queryParams("sql");
@@ -80,12 +103,20 @@ public class SparkServer {
 				// TODO: handle exception
 				resp = e.getMessage();
 			}
-		    log.info("query:"+jndi+"|"+sql+"|"+resp);
+		    response.type("application/json");
+		    response.header("Access-Control-Allow-Origin", "*");
+			
+		    long rt=start-System.currentTimeMillis();
+			String tdr=rt+"|"+jndi+"|"+sql+"|"+resp;
+			LogTDR.info(tdr);
+			
 		    return resp;
 		});
 		//////////////////////////////////////////////////////
 
-		get("/querylist", (request, response) -> {
+		Spark.get("/querylist", (request, response) -> {
+			long start=System.currentTimeMillis();
+			
 			String jndi=request.queryParams("jndi");
 			String sql=request.queryParams("sql");
 			String array=request.queryParams("array");
@@ -101,12 +132,18 @@ public class SparkServer {
 			}
 			ObjectMapper objectMapper = new ObjectMapper();
 			resp=objectMapper.writeValueAsString(result).toString();
-		    log.info("query:"+jndi+"|"+sql+"|"+resp);
+			response.type("application/json");
+			response.header("Access-Control-Allow-Origin", "*");
+			
+			long rt=start-System.currentTimeMillis();
+			String tdr=rt+"|"+jndi+"|"+sql+"|"+resp;
+			LogTDR.info(tdr);
 		    return resp;
 		});
 		
-		post("/querylist", (request, response) -> {
+		Spark.post("/querylist", (request, response) -> {
 			
+			long start=System.currentTimeMillis();
 			String resp="";
 			Result result = new Result();
 			
@@ -121,11 +158,18 @@ public class SparkServer {
 			}
 			ObjectMapper objectMapper = new ObjectMapper();
 			resp=objectMapper.writeValueAsString(result).toString();
-		    log.info("query:"+jndi+"|"+sql+"|"+resp);
+			
+			response.type("application/json");
+			response.header("Access-Control-Allow-Origin", "*");
+			
+			long rt=start-System.currentTimeMillis();
+			String tdr=rt+"|"+jndi+"|"+sql+"|"+resp;
+			LogTDR.info(tdr);
 		    return resp;
 		});
 		//////////////////////////////////////////////////////
-		get("/update", (request, response) -> {
+		Spark.get("/update", (request, response) -> {
+			long start=System.currentTimeMillis();
 			String resp="";
 			String jndi=request.queryParams("jndi");
 			String sql=request.queryParams("sql");
@@ -135,11 +179,18 @@ public class SparkServer {
 				// TODO: handle exception
 				resp = e.getMessage();
 			}
-		    log.info("query:"+jndi+"|"+sql+"|"+resp);
+		    response.type("application/json");
+		    response.header("Access-Control-Allow-Origin", "*");
+			
+		    long rt=start-System.currentTimeMillis();
+			String tdr=rt+"|"+jndi+"|"+sql+"|"+resp;
+			LogTDR.info(tdr);
 		    return resp;
 		});
 		
-		post("/update", (request, response) -> {
+		Spark.post("/update", (request, response) -> {
+			long start=System.currentTimeMillis();
+			
 			String resp="";
 			String jndi=request.queryParams("jndi");
 			String sql=request.queryParams("sql");
@@ -149,13 +200,19 @@ public class SparkServer {
 				// TODO: handle exception
 				resp = e.getMessage();
 			}
-		    log.info("query:"+jndi+"|"+sql+"|"+resp);
+		    response.type("application/json");
+		    response.header("Access-Control-Allow-Origin", "*");
+			
+		    long rt=start-System.currentTimeMillis();
+			String tdr=rt+"|"+jndi+"|"+sql+"|"+resp;
+			LogTDR.info(tdr);
 		    return resp;
 		});
 		
 		//////////////////////////////////
-		get("/getlist", (request, response) -> {
+		Spark.get("/getlist", (request, response) -> {
 			
+			long start=System.currentTimeMillis();
 			HashMap<String, String> myparam = new HashMap<String, String>();
 			Set params =  request.queryParams();
 			Iterator<String> itr = params.iterator();
@@ -196,8 +253,13 @@ public class SparkServer {
 				}
 			}
 			
+			response.type("application/json");
+			response.header("Access-Control-Allow-Origin", "*");
+			
 			resp=objectMapper.writeValueAsString(result).toString();
-		    log.info("query:"+jndi+"|"+sql+"|"+resp);
+			long rt=start-System.currentTimeMillis();
+			String tdr=rt+"|"+jndi+"|"+sql+"|"+resp;
+			LogTDR.info(tdr);
 		    return resp;
 		});
 		
@@ -298,10 +360,10 @@ public Result queryList(Result result, String array, String prefix, String jndi,
 				ps = conn.prepareStatement(sql);
 				rs = ps.executeQuery();
 
-				Map<String, Object> map = new HashMap<String, Object>();
 				int j=0;
 				while (rs.next()) {
-				
+					Map<String, Object> map = new HashMap<String, Object>();
+					
 					ResultSetMetaData meta = rs.getMetaData();
 					for (int i=0;i<meta.getColumnCount();i++) {
 						String value = rs.getString(meta.getColumnName(i+1));
@@ -309,13 +371,13 @@ public Result queryList(Result result, String array, String prefix, String jndi,
 						if (value == null) {
 							value = "null";
 						}
-						System.out.println(qkey+"-"+value);
 						map.put(qkey, value);
 					}
 					//add multiple
 					result.results.add(map);
 					j++;
 				}
+				result.status="success";
 				result.count=j;
 				result.count_total=j;
 				result.pages=1;
