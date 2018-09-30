@@ -7,6 +7,8 @@ package org.api.db;
  */
 
 import static spark.Spark.*;
+
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -25,6 +27,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.api.db.modal.Result;
 
+import com.fasterxml.jackson.core.JsonGenerationException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import spark.Filter;
@@ -82,9 +87,7 @@ public class SparkServer {
 				// TODO: handle exception
 				resp = e.getMessage();
 			}
-		    response.type("application/json");
-		    response.header("Access-Control-Allow-Origin", "*");
-			
+		   
 		    long rt=start-System.currentTimeMillis();
 			String tdr=rt+"|"+jndi+"|"+sql+"|"+resp;
 			LogTDR.info(tdr);
@@ -103,9 +106,7 @@ public class SparkServer {
 				// TODO: handle exception
 				resp = e.getMessage();
 			}
-		    response.type("application/json");
-		    response.header("Access-Control-Allow-Origin", "*");
-			
+		   
 		    long rt=start-System.currentTimeMillis();
 			String tdr=rt+"|"+jndi+"|"+sql+"|"+resp;
 			LogTDR.info(tdr);
@@ -132,9 +133,7 @@ public class SparkServer {
 			}
 			ObjectMapper objectMapper = new ObjectMapper();
 			resp=objectMapper.writeValueAsString(result).toString();
-			response.type("application/json");
-			response.header("Access-Control-Allow-Origin", "*");
-			
+		
 			long rt=start-System.currentTimeMillis();
 			String tdr=rt+"|"+jndi+"|"+sql+"|"+resp;
 			LogTDR.info(tdr);
@@ -147,20 +146,42 @@ public class SparkServer {
 			String resp="";
 			Result result = new Result();
 			
-			String jndi=request.params("jndi");
-			String sql=request.params("sql");
-			String array=request.params("array");
+			String body=request.body();
+			Map<String, String> map = new HashMap<String, String>();
+			String jndi="";
+			String sql="";
 			try {
-				result = queryList(result, array, "", jndi, sql);	
-			} catch (Exception e) {
-				// TODO: handle exception
+
+				ObjectMapper mapper = new ObjectMapper();
+				map = mapper.readValue(body, new TypeReference<Map<String, String>>(){});
+				
+				jndi=map.get("jndi");
+				sql=map.get("sql");
+				
+				try {
+					result = queryList(result, "", "", jndi, sql);	
+				} catch (Exception e) {
+					// TODO: handle exception
+					resp = e.getMessage();
+				}
+				
+			} catch (JsonGenerationException e) {
+				e.printStackTrace();
 				resp = e.getMessage();
+				
+			} catch (JsonMappingException e) {
+				e.printStackTrace();
+				resp = e.getMessage();
+				
+			} catch (IOException e) {
+				e.printStackTrace();
+				resp = e.getMessage();
+				
 			}
+			
+			
 			ObjectMapper objectMapper = new ObjectMapper();
 			resp=objectMapper.writeValueAsString(result).toString();
-			
-			response.type("application/json");
-			response.header("Access-Control-Allow-Origin", "*");
 			
 			long rt=start-System.currentTimeMillis();
 			String tdr=rt+"|"+jndi+"|"+sql+"|"+resp;
@@ -179,9 +200,7 @@ public class SparkServer {
 				// TODO: handle exception
 				resp = e.getMessage();
 			}
-		    response.type("application/json");
-		    response.header("Access-Control-Allow-Origin", "*");
-			
+		    
 		    long rt=start-System.currentTimeMillis();
 			String tdr=rt+"|"+jndi+"|"+sql+"|"+resp;
 			LogTDR.info(tdr);
@@ -253,8 +272,6 @@ public class SparkServer {
 				}
 			}
 			
-			response.type("application/json");
-			response.header("Access-Control-Allow-Origin", "*");
 			
 			resp=objectMapper.writeValueAsString(result).toString();
 			long rt=start-System.currentTimeMillis();
@@ -262,6 +279,8 @@ public class SparkServer {
 			LogTDR.info(tdr);
 		    return resp;
 		});
+		
+		apply();
 		
 		
 	}
@@ -302,8 +321,6 @@ public Result getList(Result result, String jndi, String sql) throws SQLExceptio
 				}
 				result.status="success";
 				result.count=j;
-				result.count_total=j;
-				result.pages=1;
 				
 			} catch (Exception e) {
 				log.error("SQL sql error = " + sql + ", jndi = " + jndi, e);
@@ -379,8 +396,6 @@ public Result queryList(Result result, String array, String prefix, String jndi,
 				}
 				result.status="success";
 				result.count=j;
-				result.count_total=j;
-				result.pages=1;
 				
 			} catch (Exception e) {
 				log.error("SQL sql error = " + sql + ", jndi = " + jndi, e);
