@@ -1,4 +1,4 @@
-package org.api.db.modal;
+package org.api.db.model;
 
 import java.io.Serializable;
 import java.util.ArrayList;

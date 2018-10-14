@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
 */
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.api.db.modal.Result;
+import org.api.db.model.Result;
 
 import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -38,9 +38,9 @@ import spark.Response;
 import spark.Spark;
 
 
-public class SparkServer {
+public class Router {
 
-	private final static Logger log = LogManager.getLogger(SparkServer.class);
+	private final static Logger log = LogManager.getLogger(Router.class);
 	private static final HashMap<String, String> corsHeaders = new HashMap<String, String>();
 
 	public static void main(String[] args) {
@@ -60,7 +60,7 @@ public class SparkServer {
 			@Override
 			public void handle(Request request, Response response) throws Exception {
 				corsHeaders.forEach((key, value) -> {
-					response.header(key, value);
+					//response.header(key, value);
 				});
 				response.type("application/json");
 			}
@@ -69,7 +69,7 @@ public class SparkServer {
 	}
 	
 
-	public SparkServer(int port, int minThreads, int maxThreads, int timeOutMillis){
+	public Router(int port, int minThreads, int maxThreads, int timeOutMillis){
 		
 		Spark.port(port);
 		threadPool(maxThreads, minThreads, timeOutMillis);
@@ -88,7 +88,7 @@ public class SparkServer {
 				resp = e.getMessage();
 			}
 		   
-		    long rt=start-System.currentTimeMillis();
+		    long rt=System.currentTimeMillis()-start;
 			String tdr=rt+"|"+jndi+"|"+sql+"|"+resp;
 			LogTDR.info(tdr);
 		    return resp;
@@ -107,7 +107,7 @@ public class SparkServer {
 				resp = e.getMessage();
 			}
 		   
-		    long rt=start-System.currentTimeMillis();
+		    long rt=System.currentTimeMillis()-start;
 			String tdr=rt+"|"+jndi+"|"+sql+"|"+resp;
 			LogTDR.info(tdr);
 			
@@ -134,7 +134,7 @@ public class SparkServer {
 			ObjectMapper objectMapper = new ObjectMapper();
 			resp=objectMapper.writeValueAsString(result).toString();
 		
-			long rt=start-System.currentTimeMillis();
+			long rt=System.currentTimeMillis()-start;
 			String tdr=rt+"|"+jndi+"|"+sql+"|"+resp;
 			LogTDR.info(tdr);
 		    return resp;
@@ -183,7 +183,7 @@ public class SparkServer {
 			ObjectMapper objectMapper = new ObjectMapper();
 			resp=objectMapper.writeValueAsString(result).toString();
 			
-			long rt=start-System.currentTimeMillis();
+			long rt=System.currentTimeMillis()-start;
 			String tdr=rt+"|"+jndi+"|"+sql+"|"+resp;
 			LogTDR.info(tdr);
 		    return resp;
@@ -201,7 +201,7 @@ public class SparkServer {
 				resp = e.getMessage();
 			}
 		    
-		    long rt=start-System.currentTimeMillis();
+		    long rt=System.currentTimeMillis()-start;
 			String tdr=rt+"|"+jndi+"|"+sql+"|"+resp;
 			LogTDR.info(tdr);
 		    return resp;
@@ -222,7 +222,7 @@ public class SparkServer {
 		    response.type("application/json");
 		    response.header("Access-Control-Allow-Origin", "*");
 			
-		    long rt=start-System.currentTimeMillis();
+		    long rt=System.currentTimeMillis()-start;
 			String tdr=rt+"|"+jndi+"|"+sql+"|"+resp;
 			LogTDR.info(tdr);
 		    return resp;
@@ -274,7 +274,8 @@ public class SparkServer {
 			
 			
 			resp=objectMapper.writeValueAsString(result).toString();
-			long rt=start-System.currentTimeMillis();
+			long rt=System.currentTimeMillis()-start;
+			
 			String tdr=rt+"|"+jndi+"|"+sql+"|"+resp;
 			LogTDR.info(tdr);
 		    return resp;

@@ -47,7 +47,7 @@ public class App
     	int timeOutMillis = Integer.parseInt(prop.getProperty("server.timeout","20000"));
     	
     	//start server
-    	new SparkServer(port,minThreads,maxThreads,timeOutMillis);
+    	new Router(port,minThreads,maxThreads,timeOutMillis);
     	//new TomcatServer(port, minThreads, maxThreads, timeOutMillis);
     }
     
